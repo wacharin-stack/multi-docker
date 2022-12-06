@@ -1,0 +1,20 @@
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -t wacharin2dev/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run wacharin2dev/react-test npm test -- --coverage
+
+after_success:
+  - docker build -t wacharin2dev/multi-client .client
+  - docker build -t wacharin2dev/multi-nginx .nginx
+  - docker build -t wacharin2dev/multi-server .server
+  - docker build -t wacharin2dev/multi-worker .worker
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  - docker push wacharin2dev/multi-client
+  - docker push wacharin2dev/multi-nginx
+  - docker push wacharin2dev/multi-server
+  - docker push wacharin2dev/multi-worker
