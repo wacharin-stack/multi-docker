@@ -1,12 +1,13 @@
 sudo: required
 services:
   - docker
+language: generic 
 
 before_install:
   - docker build -t wacharin-stack/react-test -f ./client/Dockerfile.dev ./client
 
 script:
-  - docker run wacharin-stack/react-test npm test -- --coverage
+  - docker run -e CI=true USERNAME/react-test npm test
 
 after_success:
   - docker build -t wacharin-stack/multi-client ./client
